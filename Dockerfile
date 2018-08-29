@@ -9,9 +9,9 @@ RUN yum -y install wget tar unzip git \
 
 # Download Azul Java, verify the hash, and install \
 RUN set -x; \
-    java_version=8.0.131; \
-    zulu_version=8.21.0.1; \
-    java_hash=1931ed3beedee0b16fb7fd37e069b162; \
+    java_version=8.0.181; \
+    zulu_version=8.31.0.1; \
+    java_hash=64270772bfaaced5611d754cd022c32e; \
     
     cd / \
     && wget http://cdn.azul.com/zulu/bin/zulu$zulu_version-jdk$java_version-linux_x64.tar.gz \
@@ -45,14 +45,14 @@ RUN cd / \
 
 # Download the CAS overlay project \
 RUN cd / \
-    && git clone --depth 1 --single-branch https://github.com/apereo/cas-overlay-template.git cas-overlay \
-    && mkdir -p /etc/cas \
+    && git clone --depth 1 --single-branch -b portal-sso-docker-0.x https://cfernandez@baltig.coredial.com/cfernandez/cas-overlay-portal-sso.git cas-overlay \
+    && mkdir -p /etc/cas/config /etc/cas/services /etc/cas/saml \
     && mkdir -p cas-overlay/bin;
 
 COPY thekeystore /etc/cas/
-COPY bin/*.* cas-overlay/bin/
-COPY etc/cas/config/*.* /cas-overlay/etc/cas/config/
-COPY etc/cas/services/*.* /cas-overlay/etc/cas/services/
+COPY bin/* cas-overlay/bin/
+COPY etc/cas/config/* /etc/cas/config/
+COPY etc/cas/services/* /etc/cas/services/
 
 RUN chmod -R 750 cas-overlay/bin \
     && chmod 750 cas-overlay/mvnw \
