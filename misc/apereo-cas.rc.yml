@@ -36,7 +36,23 @@ spec:
               value: dr0az3eh
             - name: MYSQL_VOICEAXIS_DB
               value: portal
-          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-10
+            - name: TOKEN_SIGNING_KEY
+              value: x_4kw3fmDDSNcGbaqIcKapRcCP_akE1Dkqjfo9UO38VJ2yeeCoecqdPlEinTiE9svt3PjzWPg0EyW0bc4Pf4Xw
+            - name: TOKEN_ENCRYPT_KEY
+              value: BCz7gJh_t2nDDZRwZLbREdhlx0oy1_qZFFnZn4IVto8
+            - name: WEBFLOW_SIGNING_KEY
+              value: W1u4-NpCKZHhrqsHPmG-VsN4uAj9NvMlJs-UNGJbmORJZhe8BqSQWtNdlltTARIKlYakxwPla6OIRY_-rYU7hw
+            - name: WEBFLOW_ENCRYPT_KEY
+              value: enlWcWxtZk9GQnhheXJRdg==
+            - name: TGC_SIGNING_KEY
+              value: djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_VVZiehCFqTSpb6uoSjN8hNN5Oey0Dmnbm0uUctgv5zvhvn21g
+            - name: TGC_ENCRYPT_KEY
+              value: 7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg
+            - name: REGISTRY_SIGNING_KEY
+              value: ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng
+            - name: REGISTRY_ENCRYPT_KEY
+              value: RVFzdW5vcVhXZ2d3eGVmUQ==
+          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-15
           name: apereo-cas
           command: ["/cas-overlay/bin/run-cas.sh"]
           ports:

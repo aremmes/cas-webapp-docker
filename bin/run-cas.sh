@@ -14,6 +14,14 @@ export MYSQL_VOICEAXIS_PORT=${MYSQL_VOICEAXIS_PORT:=3306}
 export MYSQL_VOICEAXIS_USER=${MYSQL_VOICEAXIS_USER:=voiceaxis}
 export MYSQL_VOICEAXIS_PASSWORD=${MYSQL_VOICEAXIS_PASSWORD:=dr0az3eh}
 export MYSQL_VOICEAXIS_DB=${MYSQL_VOICEAXIS_DB:=voiceaxis}
+export TOKEN_SIGNING_KEY=${TOKEN_SIGNING_KEY:=x_4kw3fmDDSNcGbaqIcKapRcCP_akE1Dkqjfo9UO38VJ2yeeCoecqdPlEinTiE9svt3PjzWPg0EyW0bc4Pf4Xw}
+export TOKEN_ENCRYPT_KEY=${TOKEN_ENCRYPT_KEY:=BCz7gJh_t2nDDZRwZLbREdhlx0oy1_qZFFnZn4IVto8}
+export WEBFLOW_SIGNING_KEY=${WEBFLOW_SIGNING_KEY:=W1u4-NpCKZHhrqsHPmG-VsN4uAj9NvMlJs-UNGJbmORJZhe8BqSQWtNdlltTARIKlYakxwPla6OIRY_-rYU7hw}
+export WEBFLOW_ENCRYPT_KEY=${WEBFLOW_ENCRYPT_KEY:=enlWcWxtZk9GQnhheXJRdg==}
+export TGC_SIGNING_KEY=${TGC_SIGNING_KEY:=djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_VVZiehCFqTSpb6uoSjN8hNN5Oey0Dmnbm0uUctgv5zvhvn21g}
+export TGC_ENCRYPT_KEY=${TGC_ENCRYPT_KEY:=7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg}
+export REGISTRY_SIGNING_KEY=${REGISTRY_SIGNING_KEY:=ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng}
+export REGISTRY_ENCRYPT_KEY=${REGISTRY_ENCRYPT_KEY:=RVFzdW5vcVhXZ2d3eGVmUQ==}
 
 # Build CAS config file
 cat > /etc/cas/config/cas.properties <<_EOF_
@@ -133,12 +141,12 @@ cas.webflow.session.maxConversations=5
 # Enable server-side session management
 cas.webflow.session.storage=false
 
-# cas.webflow.crypto.enabled=true
-# cas.webflow.crypto.signing.key=451FrpXjojbeUMsEo0NZJAOblyMwSw20Mq4sjhiRpU_oeOJlGB1txVMadfc8j-_dGka7EfHS9hFNW_kEZDIIIQ
-# cas.webflow.crypto.signing.keySize=512
-# cas.webflow.crypto.encryption.keySize=16
-# cas.webflow.crypto.encryption.key=enlWcWxtZk9GQnhheXJRdg==
-# cas.webflow.crypto.alg=AES
+cas.webflow.crypto.enabled=true
+cas.webflow.crypto.signing.key=${WEBFLOW_SIGNING_KEY}
+cas.webflow.crypto.signing.keySize=512
+cas.webflow.crypto.encryption.key=${WEBFLOW_ENCRYPT_KEY}
+cas.webflow.crypto.encryption.keySize=16
+cas.webflow.crypto.alg=AES
 
 ##
 # TGT and ST configuration
@@ -151,15 +159,9 @@ cas.tgc.secure=true
 cas.tgc.httpOnly=true
 cas.tgc.rememberMeMaxAge=1209600
 
-# cas.tgc.crypto.encryption.key=zTL2WSzJ72aBVlL3O4siamhwsZizwBCl72kqQksE2xc
-# cas.tgc.crypto.signing.key=CMm39jMe0_keEbouyafSksfA4YZ07EZ7ghnH-vbsGszacL0qj37T4MDCze4IL8GdhTyTCa60chCNHmwcPYm86w
-# cas.tgc.crypto.enabled=true
-
-# cas.authn.token.crypto.signing.key=K_HtOQYUcG-slb_V7HrOMGhWs_gvUDyakVyiM8WKMj80fov4NtEmi3TjFVujAp2ptbE5sOb8eLsozvlcSFQO7g
-# cas.authn.token.crypto.signing.keySize=512
-# cas.authn.token.crypto.encryption.key=TtdsVBgfSqdPkiBF
-# cas.authn.token.crypto.encryption.keySize=256
-# cas.authn.token.crypto.alg=AES
+cas.tgc.crypto.signing.key=${TGC_SIGNING_KEY}
+cas.tgc.crypto.encryption.key=${TGC_ENCRYPT_KEY}
+cas.tgc.crypto.enabled=true
 
 ##
 # CAS JPA Ticket Registry Configuration
@@ -193,12 +195,12 @@ cas.ticket.registry.jpa.driverClass=com.mysql.jdbc.Driver
 # cas.ticket.registry.jpa.pool.maxSize=18
 # cas.ticket.registry.jpa.pool.maxWait=2000
 
-# cas.ticket.registry.jpa.crypto.signing.key=B5vGq8w_iaeSa0ywXvcvKJZ9-5A0WQMV1HAksq1YLU5toz2h8s9maQPoh8FAex6AV2RcKUJggTaxE02VAVvLcw
-# cas.ticket.registry.jpa.crypto.signing.keySize=512
-# cas.ticket.registry.jpa.crypto.encryption.key=RVFzdW5vcVhXZ2d3eGVmUQ==
-# cas.ticket.registry.jpa.crypto.encryption.keySize=16
-# cas.ticket.registry.jpa.crypto.alg=AES
-# cas.ticket.registry.jpa.crypto.enabled=true
+cas.ticket.registry.jpa.crypto.enabled=true
+cas.ticket.registry.jpa.crypto.signing.key=${REGISTRY_SIGNING_KEY}
+cas.ticket.registry.jpa.crypto.signing.keySize=512
+cas.ticket.registry.jpa.crypto.encryption.key=${REGISTRY_ENCRYPT_KEY}
+cas.ticket.registry.jpa.crypto.encryption.keySize=16
+cas.ticket.registry.jpa.crypto.alg=AES
 
 ##
 # CAS Service Registry Configuration
@@ -242,6 +244,26 @@ cas.serviceRegistry.jpa.driverClass=com.mysql.jdbc.Driver
 #
 # cas.authn.accept.users=casuser::Mellon
 cas.authn.accept.users=
+
+##
+# JWT auth support
+#
+cas.authn.token.name=token
+# cas.authn.token.principalTransformation.pattern=(.+)@example.org
+# cas.authn.token.principalTransformation.groovy.location=file:///etc/cas/config/principal.groovy
+# cas.authn.token.principalTransformation.suffix=
+# cas.authn.token.principalTransformation.caseConversion=NONE|UPPERCASE|LOWERCASE
+# cas.authn.token.principalTransformation.prefix=
+
+##
+# TGT/ST encryption
+#
+cas.authn.token.crypto.enabled=true
+cas.authn.token.crypto.signing.key=${TOKEN_SIGNING_KEY}
+cas.authn.token.crypto.signing.keySize=512
+cas.authn.token.crypto.encryption.key=${TOKEN_ENCRYPT_KEY}
+cas.authn.token.crypto.encryption.keySize=256
+cas.authn.token.crypto.alg=AES
 
 ##
 # CAS JDBC Authentication Configuration
