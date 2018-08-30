@@ -1,0 +1,46 @@
+apiVersion: v1
+kind: ReplicationController
+metadata:
+  labels:
+    app: apereo-cas
+    status: live
+  name: apereo-cas
+spec:
+  replicas: 1
+  template:
+    metadata:
+      labels:
+        app: apereo-cas
+    spec:
+      containers:
+        - env:
+            - name: HOSTNAME
+              value: eng-sso.dev.coredial.com
+            - name: REGISTRY_DB_HOST
+              value: eng-portal-data.dev.coredial.com
+            - name: REGISTRY_DB_PORT
+              value: "3306"
+            - name: REGISTRY_DB_NAME
+              value: portalsso
+            - name: REGISTRY_DB_USER
+              value: cas
+            - name: REGISTRY_DB_PASS
+              value: c4s1sb3tt3r
+            - name: MYSQL_VOICEAXIS_HOST
+              value: qa6-box.dev.coredial.com
+            - name: MYSQL_VOICEAXIS_PORT
+              value: "3306"
+            - name: MYSQL_VOICEAXIS_USER
+              value: voiceaxis
+            - name: MYSQL_VOICEAXIS_PASSWORD
+              value: dr0az3eh
+            - name: MYSQL_VOICEAXIS_DB
+              value: portal
+          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-10
+          name: apereo-cas
+          command: ["/cas-overlay/bin/run-cas.sh"]
+          ports:
+            - containerPort: 8080
+              name: http
+            - containerPort: 8443
+              name: https
