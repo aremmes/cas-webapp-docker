@@ -22,6 +22,10 @@ export TGC_SIGNING_KEY=${TGC_SIGNING_KEY:=djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_V
 export TGC_ENCRYPT_KEY=${TGC_ENCRYPT_KEY:=7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg}
 export REGISTRY_SIGNING_KEY=${REGISTRY_SIGNING_KEY:=ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng}
 export REGISTRY_ENCRYPT_KEY=${REGISTRY_ENCRYPT_KEY:=RVFzdW5vcVhXZ2d3eGVmUQ==}
+export IDP_SIGNING_KEY="${IDP_SIGNING_KEY:=nope}"
+export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=nope}"
+export IDP_ENCRYPT_KEY="${IDP_ENCRYPT_KEY:=nope}"
+export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=nope}"
 
 # Build CAS config file
 cat > /etc/cas/config/cas.properties <<_EOF_
@@ -510,6 +514,86 @@ shell.auth.simple.user.password=c4s1sb3tt3r
 # shell.ssh.authTimeout=3000
 # shell.ssh.idleTimeout=30000
 _EOF_
+
+# Write IDP keys/certs and metadata -- only if set in the config
+# If we don't set this, CAS will automatically create new keys/certs
+# and metadata file, useful for dev environments
+if [ "${IDP_SIGNING_KEY}" != "nope" ]; then
+cat <<<"${IDP_SIGNING_KEY}" > /etc/cas/saml/idp-signing.key
+cat <<<"${IDP_SIGNING_CERT}" > /etc/cas/saml/idp-signing.cert
+cat <<<"${IDP_ENCRYPT_KEY}" > /etc/cas/saml/idp-encryption.key
+cat <<<"${IDP_ENCRYPT_CERT}" > /etc/cas/saml/idp-encryption.cert
+cat > /etc/cas/saml/idp-metadata.xml <<__EOF__
+<?xml version="1.0" encoding="UTF-8"?>
+<EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" entityID="https://${HOSTNAME}/cas/idp">
+    <IDPSSODescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:2.0:protocol urn:oasis:names:tc:SAML:1.1:protocol urn:mace:shibboleth:1.0">
+        <Extensions>
+            <shibmd:Scope regexp="false">${HOSTNAME}</shibmd:Scope>
+        </Extensions>
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>${IDP_SIGNING_CERT}</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <KeyDescriptor use="encryption">${IDP_ENCRYPT_CERT}</ds:X509Certificate>
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+
+        <ArtifactResolutionService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding"
+                                   Location="https://${HOSTNAME}/cas/idp/profile/SAML1/SOAP/ArtifactResolution" index="1"/>
+
+        <SingleLogoutService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/POST/SLO"/>
+
+        <NameIDFormat>urn:mace:shibboleth:1.0:nameIdentifier</NameIDFormat>
+        <NameIDFormat>urn:oasis:names:tc:SAML:2.0:nameid-format:transient</NameIDFormat>
+
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/POST/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-POST-SimpleSign" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/POST-SimpleSign/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:HTTP-Redirect" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/Redirect/SSO"/>
+        <SingleSignOnService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/SOAP/ECP"/>
+    </IDPSSODescriptor>
+
+    <AttributeAuthorityDescriptor protocolSupportEnumeration="urn:oasis:names:tc:SAML:1.1:protocol urn:oasis:names:tc:SAML:2.0:protocol">
+        <Extensions>
+            <shibmd:Scope regexp="false">${HOSTNAME}</shibmd:Scope>
+        </Extensions>
+        <KeyDescriptor use="signing">
+            <ds:KeyInfo>
+                <ds:X509Data>
+                    <ds:X509Certificate>${IDP_SIGNING_CERT}</ds:X509Certificate>
+                </ds:X509Data>
+            </ds:KeyInfo>
+        </KeyDescriptor>
+        <AttributeService Binding="urn:oasis:names:tc:SAML:1.0:bindings:SOAP-binding" Location="https://${HOSTNAME}/cas/idp/profile/SAML1/SOAP/AttributeQuery"/>
+        <AttributeService Binding="urn:oasis:names:tc:SAML:2.0:bindings:SOAP" Location="https://${HOSTNAME}/cas/idp/profile/SAML2/SOAP/AttributeQuery"/>
+    </AttributeAuthorityDescriptor>
+
+    <Organization>
+        <OrganizationName xml:lang="en">CoreDial, LLC</OrganizationName>
+        <OrganizationDisplayName xml:lang="en">CoreDial</OrganizationDisplayName>
+        <OrganizationURL xml:lang="en">https://www.coredial.com/</OrganizationURL>
+    </Organization>
+    <ContactPerson contactType="administrative">
+        <GivenName>CoreDial Engineering</GivenName>
+        <EmailAddress>cd-eng@coredial.com</EmailAddress>
+    </ContactPerson>
+    <ContactPerson contactType="technical">
+        <GivenName>CoreDial Engineering</GivenName>
+        <EmailAddress>cd-eng@coredial.com</EmailAddress>
+    </ContactPerson>
+    <ContactPerson contactType="support">
+        <GivenName>CoreDial Support</GivenName>
+        <EmailAddress>support@coredial.com</EmailAddress>
+    </ContactPerson>
+</EntityDescriptor>
+__EOF__
+fi
 
 # echo "Use of this image/container constitutes acceptence of the Oracle Binary Code License Agreement for Java SE."
 cd /cas-overlay/
