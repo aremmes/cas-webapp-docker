@@ -2,7 +2,7 @@
 # Config variables from RC env settings
 export JAVA_HOME=/opt/jre-home
 export PATH=$PATH:$JAVA_HOME/bin:.
-export JVM_OPTS="-server -Xms2048m -Xmx2048m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m -XX:MinHeapFreeRatio=35 -XX:MaxHeapFreeRatio=80 -XX:NewRatio=8 -XX:SurvivorRatio=32 -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC"
+export JVM_OPTS="${JVM_OPTS:=-server -Xms2048m -Xmx2048m -XX:MetaspaceSize=256m -XX:MaxMetaspaceSize=512m -XX:MinHeapFreeRatio=35 -XX:MaxHeapFreeRatio=80 -XX:NewRatio=8 -XX:SurvivorRatio=32 -XX:+UseConcMarkSweepGC -XX:+CMSClassUnloadingEnabled -XX:+UseParNewGC}"
 export HOSTNAME=${HOSTNAME:=dev-sso.dev.coredial.com}
 export REGISTRY_DB_HOST=${REGISTRY_DB_HOST:=localhost}
 export REGISTRY_DB_PORT=${REGISTRY_DB_PORT:=3306}
@@ -22,10 +22,10 @@ export TGC_SIGNING_KEY=${TGC_SIGNING_KEY:=djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_V
 export TGC_ENCRYPT_KEY=${TGC_ENCRYPT_KEY:=7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg}
 export REGISTRY_SIGNING_KEY=${REGISTRY_SIGNING_KEY:=ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng}
 export REGISTRY_ENCRYPT_KEY=${REGISTRY_ENCRYPT_KEY:=RVFzdW5vcVhXZ2d3eGVmUQ==}
-export IDP_SIGNING_KEY="${IDP_SIGNING_KEY:=nope}"
-export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=nope}"
-export IDP_ENCRYPT_KEY="${IDP_ENCRYPT_KEY:=nope}"
-export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=nope}"
+export IDP_SIGNING_KEY="${IDP_SIGNING_KEY:=none}"
+export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=none}"
+export IDP_ENCRYPT_KEY="${IDP_ENCRYPT_KEY:=none}"
+export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=none}"
 
 # Build CAS config file
 cat > /etc/cas/config/cas.properties <<_EOF_
@@ -518,7 +518,8 @@ _EOF_
 # Write IDP keys/certs and metadata -- only if set in the config
 # If we don't set this, CAS will automatically create new keys/certs
 # and metadata file, useful for dev environments
-if [ "${IDP_SIGNING_KEY}" != "nope" ]; then
+if [ "${IDP_SIGNING_KEY}" != "none" ]; then
+mkdir -p /etc/cas/saml
 cat <<<"${IDP_SIGNING_KEY}" > /etc/cas/saml/idp-signing.key
 cat <<<"${IDP_SIGNING_CERT}" > /etc/cas/saml/idp-signing.cert
 cat <<<"${IDP_ENCRYPT_KEY}" > /etc/cas/saml/idp-encryption.key
