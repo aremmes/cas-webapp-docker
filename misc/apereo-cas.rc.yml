@@ -6,7 +6,7 @@ metadata:
     status: live
   name: apereo-cas
 spec:
-  replicas: 1
+  replicas: ${apereo-cas-replicas}
   template:
     metadata:
       labels:
@@ -15,43 +15,43 @@ spec:
       containers:
         - env:
             - name: HOSTNAME
-              value: eng-sso.dev.coredial.com
+              value: ${apereo-cas-server-host-name}
             - name: REGISTRY_DB_HOST
-              value: eng-portal-data.dev.coredial.com
+              value: ${apereo-cas-registry-db-host}
             - name: REGISTRY_DB_PORT
-              value: "3306"
+              value: "${apereo-cas-registry-db-port}"
             - name: REGISTRY_DB_NAME
-              value: portalsso
+              value: ${apereo-cas-registry-db-name}
             - name: REGISTRY_DB_USER
-              value: cas
+              value: ${apereo-cas-registry-db-user}
             - name: REGISTRY_DB_PASS
-              value: c4s1sb3tt3r
+              value: ${apereo-cas-registry-db-pass}
             - name: MYSQL_VOICEAXIS_HOST
-              value: qa6-box.dev.coredial.com
+              value: ${mysql-voiceaxis-read-host}
             - name: MYSQL_VOICEAXIS_PORT
-              value: "3306"
+              value: "${mysql-voiceaxis-read-port}"
             - name: MYSQL_VOICEAXIS_USER
-              value: voiceaxis
+              value: ${mysql-voiceaxis-read-user}
             - name: MYSQL_VOICEAXIS_PASSWORD
-              value: dr0az3eh
+              value: ${mysql-voiceaxis-read-password}
             - name: MYSQL_VOICEAXIS_DB
-              value: portal
+              value: ${mysql-voiceaxis-read-db}
             - name: TOKEN_SIGNING_KEY
-              value: x_4kw3fmDDSNcGbaqIcKapRcCP_akE1Dkqjfo9UO38VJ2yeeCoecqdPlEinTiE9svt3PjzWPg0EyW0bc4Pf4Xw
+              value: ${apereo-cas-token-signing-key}
             - name: TOKEN_ENCRYPT_KEY
-              value: BCz7gJh_t2nDDZRwZLbREdhlx0oy1_qZFFnZn4IVto8
+              value: ${apereo-cas-token-encryption-key}
             - name: WEBFLOW_SIGNING_KEY
-              value: W1u4-NpCKZHhrqsHPmG-VsN4uAj9NvMlJs-UNGJbmORJZhe8BqSQWtNdlltTARIKlYakxwPla6OIRY_-rYU7hw
+              value: ${apereo-cas-webflow-signing-key}
             - name: WEBFLOW_ENCRYPT_KEY
-              value: enlWcWxtZk9GQnhheXJRdg==
+              value: ${apereo-cas-webflow-encryption-key}
             - name: TGC_SIGNING_KEY
-              value: djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_VVZiehCFqTSpb6uoSjN8hNN5Oey0Dmnbm0uUctgv5zvhvn21g
+              value: ${apereo-cas-tgc-signing-key}
             - name: TGC_ENCRYPT_KEY
-              value: 7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg
+              value: ${apereo-cas-tgc-encryption-key}
             - name: REGISTRY_SIGNING_KEY
-              value: ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng
+              value: ${apereo-cas-registry-signing-key}
             - name: REGISTRY_ENCRYPT_KEY
-              value: RVFzdW5vcVhXZ2d3eGVmUQ==
+              value: ${apereo-cas-registry-encryption-key}
           image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-15
           name: apereo-cas
           command: ["/cas-overlay/bin/run-cas.sh"]

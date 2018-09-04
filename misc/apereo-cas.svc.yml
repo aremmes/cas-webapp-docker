@@ -10,11 +10,11 @@ spec:
   ports:
     - name: http
       port: 8080
-      nodePort: 30146
+      nodePort: 30140
       protocol: TCP
     - name: https
       port: 8443
-      nodePort: 30147
+      nodePort: 30140
       protocol: TCP
   selector:
     app: apereo-cas
