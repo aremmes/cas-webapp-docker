@@ -22,10 +22,11 @@ export TGC_SIGNING_KEY=${TGC_SIGNING_KEY:=djfLEJaeLV-YeULLPi7AkogQOvNCGxLOXw_j_V
 export TGC_ENCRYPT_KEY=${TGC_ENCRYPT_KEY:=7g6FtyWaVU3IQdhgOu9pUz7IZmkNGsJ1vixBzxz0FOg}
 export REGISTRY_SIGNING_KEY=${REGISTRY_SIGNING_KEY:=ai7I046C_RbCclExXhW44lUs8Byl0pVMOnCvi2WZvdOKGYb3z5Hm1aBspKkdXj5EK9A0VYNrOMcBNULoVfIYng}
 export REGISTRY_ENCRYPT_KEY=${REGISTRY_ENCRYPT_KEY:=RVFzdW5vcVhXZ2d3eGVmUQ==}
-export IDP_SIGNING_KEY="${IDP_SIGNING_KEY:=none}"
-export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=none}"
-export IDP_ENCRYPT_KEY="${IDP_ENCRYPT_KEY:=none}"
-export IDP_SIGNING_CERT="${IDP_SIGNING_CERT:=none}"
+export TOMCAT_KEYSTORE_FILE="${TOMCAT_KEYSTORE_FILE:=file:///etc/cas/ssl/star.dev.coredial.com.p12}"
+export TOMCAT_KEYSTORE_TYPE="${TOMCAT_KEYSTORE_TYPE:=PKCS12}"
+export TOMCAT_KEYSTORE_PASS="${TOMCAT_KEYSTORE_PASS:=k3y5t0r3}"
+export TOMCAT_KEY_PASS="${TOMCAT_KEY_PASS:=k3y5t0r3}"
+export TOMCAT_KEY_ALIAS="${TOMCAT_KEY_PASS:=1}"
 
 # Build CAS config file
 cat > /etc/cas/config/cas.properties <<_EOF_
@@ -40,15 +41,15 @@ spring.cloud.config.server.native.searchLocations=file:///etc/cas/config
 server.context-path=/cas
 server.port=8443
 
-server.ssl.key-store=file:/etc/cas/thekeystore
-server.ssl.key-store-password=changeit
-server.ssl.key-password=changeit
+server.ssl.key-store=${TOMCAT_KEYSTORE_FILE}
+server.ssl.key-store-password=${TOMCAT_KEYSTORE_PASS}
+server.ssl.key-password=${TOMCAT_KEY_PASS}
 # server.ssl.ciphers=
 # server.ssl.client-auth=
 # server.ssl.enabled=
-# server.ssl.key-alias=
+server.ssl.key-alias=${TOMCAT_KEY_ALIAS}
 # server.ssl.key-store-provider=
-# server.ssl.key-store-type=
+server.ssl.key-store-type=${TOMCAT_KEYSTORE_TYPE}
 # server.ssl.protocol=
 # server.ssl.trust-store=
 # server.ssl.trust-store-password=
@@ -518,12 +519,14 @@ _EOF_
 # Write IDP keys/certs and metadata -- only if set in the config
 # If we don't set this, CAS will automatically create new keys/certs
 # and metadata file, useful for dev environments
-if [ "${IDP_SIGNING_KEY}" != "none" ]; then
-mkdir -p /etc/cas/saml
-cat <<<"${IDP_SIGNING_KEY}" > /etc/cas/saml/idp-signing.key
-cat <<<"${IDP_SIGNING_CERT}" > /etc/cas/saml/idp-signing.cert
-cat <<<"${IDP_ENCRYPT_KEY}" > /etc/cas/saml/idp-encryption.key
-cat <<<"${IDP_ENCRYPT_CERT}" > /etc/cas/saml/idp-encryption.cert
+if [ -r /etc/cas/saml/idp-signing.key \
+  -a -r /etc/cas/saml/idp-signing.crt \
+  -a -r /etc/cas/saml/idp-encryption.key \
+  -a -r  /etc/cas/saml/idp-encryption.crt ]; then
+export IDP_SIGNING_KEY=$(< /etc/cas/saml/idp-signing.key)
+export IDP_SIGNING_CERT=$(< /etc/cas/saml/idp-signing.crt)
+export IDP_ENCRYPT_KEY=$(< /etc/cas/saml/idp-encryption.key)
+export IDP_ENCRYPT_CERT=$(< /etc/cas/saml/idp-encryption.crt)
 cat > /etc/cas/saml/idp-metadata.xml <<__EOF__
 <?xml version="1.0" encoding="UTF-8"?>
 <EntityDescriptor xmlns="urn:oasis:names:tc:SAML:2.0:metadata" xmlns:ds="http://www.w3.org/2000/09/xmldsig#" xmlns:shibmd="urn:mace:shibboleth:metadata:1.0" xmlns:xml="http://www.w3.org/XML/1998/namespace" xmlns:mdui="urn:oasis:names:tc:SAML:metadata:ui" entityID="https://${HOSTNAME}/cas/idp">

@@ -49,7 +49,6 @@ RUN cd / \
     && mkdir -p /etc/cas/config /etc/cas/services /etc/cas/saml \
     && mkdir -p cas-overlay/bin;
 
-COPY thekeystore /etc/cas/
 COPY bin/* cas-overlay/bin/
 COPY etc/cas/config/* /etc/cas/config/
 COPY etc/cas/services/* /etc/cas/services/

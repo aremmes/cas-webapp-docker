@@ -12,6 +12,13 @@ spec:
       labels:
         app: apereo-cas
     spec:
+      volumes:
+        - name: apereo-cas-ssl
+          secret:
+            secretName: apereo-cas-ssl
+        - name: apereo-cas-saml
+          secret:
+            secretName: apereo-cas-saml
       containers:
         - env:
             - name: HOSTNAME
@@ -54,6 +61,11 @@ spec:
               value: ${apereo-cas-registry-encryption-key}
           image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-15
           name: apereo-cas
+          volumeMounts:
+            - name: apereo-cas-ssl
+              mountPath: /etc/cas/ssl
+            - name: apereo-cas-saml
+              mountPath: /etc/cas/saml
           command: ["/cas-overlay/bin/run-cas.sh"]
           ports:
             - containerPort: 8080
