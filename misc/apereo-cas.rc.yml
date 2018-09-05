@@ -34,15 +34,15 @@ spec:
             - name: REGISTRY_DB_PASS
               value: ${apereo-cas-registry-db-pass}
             - name: MYSQL_VOICEAXIS_HOST
-              value: ${mysql-voiceaxis-read-host}
+              value: ${mysql-voiceaxis-host}
             - name: MYSQL_VOICEAXIS_PORT
-              value: "${mysql-voiceaxis-read-port}"
+              value: "${mysql-voiceaxis-port}"
             - name: MYSQL_VOICEAXIS_USER
-              value: ${mysql-voiceaxis-read-user}
+              value: ${mysql-voiceaxis-user}
             - name: MYSQL_VOICEAXIS_PASSWORD
-              value: ${mysql-voiceaxis-read-password}
+              value: ${mysql-voiceaxis-password}
             - name: MYSQL_VOICEAXIS_DB
-              value: ${mysql-voiceaxis-read-db}
+              value: ${mysql-voiceaxis-db}
             - name: TOKEN_SIGNING_KEY
               value: ${apereo-cas-token-signing-key}
             - name: TOKEN_ENCRYPT_KEY
@@ -59,7 +59,17 @@ spec:
               value: ${apereo-cas-registry-signing-key}
             - name: REGISTRY_ENCRYPT_KEY
               value: ${apereo-cas-registry-encryption-key}
-          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-15
+            - name: TOMCAT_KEYSTORE_FILE
+              value: ${apereo-cas-tomcat-keystore-file}
+            - name: TOMCAT_KEYSTORE_TYPE
+              value: ${apereo-cas-tomcat-keystore-type}
+            - name: TOMCAT_KEYSTORE_PASS
+              value: ${apereo-cas-tomcat-keystore-pass}
+            - name: TOMCAT_KEY_PASS
+              value: ${apereo-cas-tomcat-key-pass}
+            - name: TOMCAT_KEY_ALIAS
+              value: "${apereo-cas-tomcat-key-alias}"
+          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-19
           name: apereo-cas
           volumeMounts:
             - name: apereo-cas-ssl

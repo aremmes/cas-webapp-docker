@@ -14,7 +14,7 @@ spec:
       protocol: TCP
     - name: https
       port: 8443
-      nodePort: 30140
+      nodePort: 30141
       protocol: TCP
   selector:
     app: apereo-cas
