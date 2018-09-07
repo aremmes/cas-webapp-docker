@@ -1,6 +1,6 @@
 FROM centos:centos7
 
-MAINTAINER Apereo Foundation
+MAINTAINER CoreDial, LLC
 
 ENV PATH=$PATH:$JRE_HOME/bin
 
@@ -45,11 +45,12 @@ RUN cd / \
 
 # Download the CAS overlay project \
 RUN cd / \
-    && git clone --depth 1 --single-branch -b portal-sso-docker-0.x https://cfernandez@baltig.coredial.com/cfernandez/cas-overlay-portal-sso.git cas-overlay \
+    && git clone --depth 1 --single-branch -b 5.2 https://github.com/apereo/cas-overlay-template.git cas-overlay \
     && mkdir -p /etc/cas/config /etc/cas/services /etc/cas/saml \
     && mkdir -p cas-overlay/bin;
 
-COPY bin/* cas-overlay/bin/
+COPY pom.xml /cas-overlay/
+COPY bin/* /cas-overlay/bin/
 COPY etc/cas/config/* /etc/cas/config/
 COPY etc/cas/services/* /etc/cas/services/
 
