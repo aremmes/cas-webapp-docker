@@ -68,6 +68,8 @@ WORKDIR /cas-overlay
 ENV JAVA_HOME /opt/jre-home
 ENV PATH $PATH:$JAVA_HOME/bin:.
 
-RUN ./mvnw clean package -T 10
+RUN ./mvnw clean package -T 10 \
+    && ./mvnw dependency:purge-local-repository -DactTransitively=false -DreResolve=false \
+    && rm -rf /cas-overlay/target/war /cas-overlay/target/cas /root/.m2
 
 CMD ["/cas-overlay/bin/run-cas.sh"]

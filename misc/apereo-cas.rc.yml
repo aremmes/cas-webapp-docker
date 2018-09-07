@@ -69,7 +69,7 @@ spec:
               value: ${apereo-cas-tomcat-key-pass}
             - name: TOMCAT_KEY_ALIAS
               value: "${apereo-cas-tomcat-key-alias}"
-          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-19
+          image: eng-kubes.dev.coredial.com:30122/apereo/cas:v5.4.2-20
           name: apereo-cas
           volumeMounts:
             - name: apereo-cas-ssl
