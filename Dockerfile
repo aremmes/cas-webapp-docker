@@ -45,10 +45,11 @@ RUN cd / \
 RUN cd / \
     && git clone --depth 1 --single-branch -b 5.2 https://github.com/apereo/cas-overlay-template.git cas-overlay \
     && mkdir -p /etc/cas/config /etc/cas/services /etc/cas/saml \
-    && mkdir -p cas-overlay/bin;
+    && mkdir -p cas-overlay/bin cas-overlay/src;
 
 COPY pom.xml /cas-overlay/
 COPY bin/* /cas-overlay/bin/
+COPY src/ /cas-overlay/src/
 COPY etc/cas/config/* /etc/cas/config/
 COPY etc/cas/services/* /etc/cas/services/
 
